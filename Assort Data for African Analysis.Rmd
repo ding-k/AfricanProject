@@ -1,0 +1,66 @@
+---
+title: "Assort data African Analysis"
+author: "Ke Ding"
+date: "7/17/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import data from various sources, worldbank etc.
+
+
+```{r improve sani}
+SSA_names<-c("Angola", "Benin", "Botswana",	"Burkina Faso",	"Burundi",	"Cameroon",	"Cabo Verde", "Cape Verde", "Central African Republic",	"Chad",	"Congo, Dem. Rep.","Democratic Republic of the Congo", "Congo DR",	"Congo, Rep.", "Congo",	"Comoros",	"Cote d'Ivoire","Côte d'Ivoire",	"Djibouti",	"Equatorial Guinea","Cote d Ivoire",	"Gabon", "Eritrea", "Ethiopia",	"Gambia, The", "Gambia", "Gambia The",	"Ghana",	"Guinea",	"Guinea-Bissau",	"Kenya",	"Lesotho",	"Liberia", "Madagascar",	"Malawi",	"Mali",	"Mauritania",	"Mauritius", "Mozambique",	"Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Sao Tome & Principe",	"Seychelles", "Somalia", "South Africa", "Sudan", "Swaziland", "Tanzania","United Republic of Tanzania", "Togo", "Zambia", "Zimbabwe",	"Senegal", "Sierra Leone", "South Sudan", "Uganda")
+imp_sani_all_Countries<-read.csv("WB_improved_sanitation.csv")
+colnames(imp_sani_all_Countries)<-c("Countries","X2015")
+imp_sani_all_Countries$Countries<-as.character(imp_sani_all_Countries$Countries)
+imp_sani_all_Countries$X2015<-as.numeric(imp_sani_all_Countries$X2015)
+imp_sani_SSA<-subset(imp_sani_all_Countries,Countries %in% SSA_names)
+
+```
+
+
+```{r}
+def_food_all_Countries<-read.csv("WB_def_food_all_countries.csv")
+colnames(def_food_all_Countries)<-c("Countries","X2016")
+def_food_all_Countries$Countries<-as.character(def_food_all_Countries$Countries)
+def_food_all_Countries$X2016<-as.numeric(def_food_all_Countries$X2016)
+def_food_SSA<-subset(def_food_all_Countries,Countries %in% SSA_names)
+```
+
+
+
+```{r}
+diarrhea_all_Countries<-read.csv("UNICEF_Diarrhea.csv")
+colnames(diarrhea_all_Countries)<-c("Countries","X2015")
+diarrhea_all_Countries$Countries<-as.character(diarrhea_all_Countries$Countries)
+diarrhea_all_Countries$X2015<-as.numeric(diarrhea_all_Countries$X2015)
+diarrhea_SSA<-subset(diarrhea_all_Countries,Countries %in% SSA_names)
+```
+
+
+```{r}
+air_pollution_all_Countries<-read.csv("WHO_Air_pollution.csv")
+colnames(air_pollution_all_Countries)<-c("Countries","Tot_Pop","LRD", "LUNGC", "ISC_Hrt_D","Stroke","Chrono_Plum")
+air_pollution_all_Countries$Countries<-as.character(air_pollution_all_Countries$Countries)
+air_pollution_SSA<-subset(air_pollution_all_Countries,Countries %in% SSA_names)
+```
+
+
+
+```{r}
+var_interan_all_Countries<-read.csv("Interannual_Variability.csv")
+colnames(var_interan_all_Countries)<-c("Countries","var_interan")
+var_interan_all_Countries$Countries<-as.character(var_interan_all_Countries$Countries)
+var_interan_SSA<-subset(var_interan_all_Countries,Countries %in% SSA_names)
+```
+
+```{r}
+var_seas_all_Countries<-read.csv("variability_seasonal.csv")
+colnames(var_seas_all_Countries)<-c("Countries","var_seas")
+var_seas_all_Countries$Countries<-as.character(var_seas_all_Countries$Countries)
+var_seas_SSA<-subset(var_seas_all_Countries,Countries %in% SSA_names)
+```
