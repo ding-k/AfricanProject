@@ -507,5 +507,5 @@ biplot(ac_matrix_pca)
 ```
 
 Compare to the independent matrix, the access matrix contains one less variable (6). The first three principal components counts for more than 93 percent of the total variance. The most siginificant component in pc1 is "total population have access to safe drinking water". In pc2, the energy per capita is the most significant component. In the pc3, deficit of food is the predominant variance. 
-
+We can discuss those findings in the next meeting.
 
