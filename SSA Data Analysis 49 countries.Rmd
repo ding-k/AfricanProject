@@ -1,7 +1,7 @@
 ---
 title: "SSA data Analysis"
 author: "Ke Ding"
-date: "7/19/2017"
+date: "8/23/2017"
 output: pdf_document
 ---
 
@@ -9,11 +9,14 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+
 ##Work log
 July 3rd:
 I addressed the comments from the last meeting and start to write down some of the findings from the graphs we plotted.
 July 19th:
 I expanded my database and start to do the data analysis.
+August 18th:
+I filled the data in the access matrix and independent matrix and performed the pca analyses for the two matrix.
 ```{r, include=FALSE}
 getwd()
 #setwd("/Users/dr.dk/Desktop/R-programming")
@@ -32,7 +35,9 @@ data<-read.csv("WEF_Data_Compilation_ALL_SSA.csv")
 no_use<- names(data) %in% c("X")
 data<-data[!no_use]
 ```
+
 ## WEF Access
+
 #Total Population with access to safe drinking water
 
 The range of percentage of total population with access to safe drinking water varies from 50% to nearly 100%. African Countires such as Mauritius, Sao Tome and Principle, and Botswana performed very well, however, 8 out of 49 SSA countries were around the bottom line of 
@@ -58,6 +63,7 @@ ggplot(ac_dw_melt,aes(x=variable,y=value))+ geom_col(mapping = NULL, data = NULL
 warning= FALSE
 
 ```
+
 #Depth of The Food Deficit
 
 The depth of food deficit, measured by calories per person per day, varies from 20 calories to 400 calories, with an average of 140kcal/person/day. Countries such as Central African Republic, Namibia and Zambia exceeded 300 calories of food deficit daily. In the other hand, countries such as Ghana, Gabon, Gambia and South Africa nearly have no deficit in food. 
@@ -217,9 +223,10 @@ ggplot(defi_food_ener_pp_af, aes(x=defi_food, y=ener_pp, color=df_ep_countries))
 warning= FALSE
 ```
 
-Most obviously, South Africa is the outlier which is not suprising. While Mozambique and Lesotho are the two countries wrapped by South Africa, relatively closed to each other but varied significantly in deficit of food supply.
+Most obviously, South Africa is the outlier which is not suprising. Mozambique and Lesotho are the two countries wrapped by South Africa, relatively closed to each other but varied significantly in deficit of food supply.
 
 ##Correlation PCA and CCA statistical Analysis
+
 ```{r}
 #form a matrix of all three access parameters
 ac_3<- cbind(ac_dw_c[,2],ener_pp_c,defi_food_c)
@@ -245,6 +252,7 @@ warning= FALSE
 When we added more countries in our analysis, the correlation coefficient dropped. The ac_dw vs. ener_pp dropped from 0.57 to 0.34, and ac_dw vs. defi_food dropped from -0.70 to -0.32. P values suggested that there are significant statistitical correlations (p=0.0376) between ac_dw and ener_pp, while ac_dw and defi_food have less strong statistical correlations (p=0.0518).
 
 #PCA on WEF Access
+
 ```{r}
 #principle component analysis on access
 library(HSAUR)
@@ -404,7 +412,7 @@ equality_af<-head(equality,-5)
 
 
 ```{r}
-data[grep("population",data$Parameter.,ignore.case=TRUE),]
+#data[grep("population",data$Parameter.,ignore.case=TRUE),]
 lt_ppt<-subset(data,Parameter.=="Long-term annual precip depth")
 tot_re_w<-subset(data,Parameter.=="Total renewable water sources")
 dep_ra<-subset(data,Parameter.=="Dependency ratio")
@@ -456,7 +464,7 @@ ind_matrix_af<-head(ind_matrix,-5)
 ind_matrix_5ref<-head(ind_matrix,5)
 
 #subset the access data
-data[grep("energy supply",data$Parameter.,ignore.case=TRUE),]
+#data[grep("energy supply",data$Parameter.,ignore.case=TRUE),]
 tot_pop_ac_dw<-subset(data, Parameter.=="Total population with access to safe drinking-water")
 tot_pop_ac_dw_melt<-melt(tot_pop_ac_dw,id.vars = c("Parameter.","Unit.","Source.","Year."))
 tot_pop_ac_dw_melt$value<-as.numeric(tot_pop_ac_dw_melt$value)
@@ -487,6 +495,7 @@ summary(ind_matrix_pca)
 screeplot(ind_matrix_pca, type="lines")
 ind_matrix_1<- ind_matrix_pca$rotation[,1]
 ind_matrix_1
+biplot(ind_matrix_pca)
 ```
 The pca analysis for the independent variables  for 49 countries (data are available for most of the countries) was completed and the results was shown above. The first 4 principal components contributes 80 percent of the total variance. When looking at the first principal component, interannual variance and longtime precipitation are the top two variables who vary the most. In the second principal component, the seasonal variance and dependency ratio are the top two vairiables who vary the most. In the third principal component, the GDP is the predominent variable contributes to the total variance, while the total renewable water becomes the most important variable in the fourth principal component.
 
@@ -507,5 +516,6 @@ biplot(ac_matrix_pca)
 ```
 
 Compare to the independent matrix, the access matrix contains one less variable (6). The first three principal components counts for more than 93 percent of the total variance. The most siginificant component in pc1 is "total population have access to safe drinking water". In pc2, the energy per capita is the most significant component. In the pc3, deficit of food is the predominant variance. 
+
 We can discuss those findings in the next meeting.
 
