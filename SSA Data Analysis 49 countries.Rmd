@@ -404,7 +404,7 @@ equality_af<-head(equality,-5)
 
 
 ```{r}
-data[grep("population",data$Parameter.,ignore.case=TRUE),]
+#data[grep("population",data$Parameter.,ignore.case=TRUE),]
 lt_ppt<-subset(data,Parameter.=="Long-term annual precip depth")
 tot_re_w<-subset(data,Parameter.=="Total renewable water sources")
 dep_ra<-subset(data,Parameter.=="Dependency ratio")
@@ -456,7 +456,7 @@ ind_matrix_af<-head(ind_matrix,-5)
 ind_matrix_5ref<-head(ind_matrix,5)
 
 #subset the access data
-data[grep("energy supply",data$Parameter.,ignore.case=TRUE),]
+#data[grep("energy supply",data$Parameter.,ignore.case=TRUE),]
 tot_pop_ac_dw<-subset(data, Parameter.=="Total population with access to safe drinking-water")
 tot_pop_ac_dw_melt<-melt(tot_pop_ac_dw,id.vars = c("Parameter.","Unit.","Source.","Year."))
 tot_pop_ac_dw_melt$value<-as.numeric(tot_pop_ac_dw_melt$value)
@@ -466,11 +466,16 @@ tot_pop_impr_sani<-subset(data, Parameter.=="Population with access to improved 
 tot_pop_impr_sani_melt<-melt(tot_pop_impr_sani,id.vars = c("Parameter.","Unit.","Source.","Year."))
 tot_pop_impr_sani_melt$value<-as.numeric(tot_pop_impr_sani_melt$value)
 tot_pop_impr_sani_c<-tot_pop_impr_sani_melt$value
-ac_matrix<-cbind(tot_pop_ac_dw_c, ac_dw_ur_melt$value, ac_dw_ru_melt$value, tot_pop_impr_sani_c,ener_pp_c, defi_food_c)
+# Cut the redundancy of rural and
+# ac_matrix<-cbind(tot_pop_ac_dw_c, ac_dw_ur_melt$value, ac_dw_ru_melt$value, tot_pop_impr_sani_c,ener_pp_c, defi_food_c)
+ac_matrix<-cbind(tot_pop_ac_dw_c, tot_pop_impr_sani_c, ener_pp_c, defi_food_c)
+
 ac_matrix$value<-as.numeric(ac_matrix$value)
 ac_matrix$`Depth of the food deficit`<-as.numeric(ac_matrix$`Depth of the food deficit`)
 row.names(ac_matrix)<-Countries
-colnames(ac_matrix)<-c("tot_pop_ac_dw","ac_dw_ur", "ac_dw_ru", "tot_pop_impr_sani","ener_pp", "defi_food")
+#colnames(ac_matrix)<-c("tot_pop_ac_dw","ac_dw_ur", "ac_dw_ru", "tot_pop_impr_sani","ener_pp", "defi_food")
+colnames(ac_matrix)<-c("tot_pop_ac_dw", "tot_pop_impr_sani","ener_pp", "defi_food")
+
 ac_matrix_af<-head(ac_matrix,-5)
 ac_matrix_5ref<-head(ac_matrix,5)
 ```
@@ -488,6 +493,7 @@ screeplot(ind_matrix_pca, type="lines")
 ind_matrix_1<- ind_matrix_pca$rotation[,1]
 ind_matrix_1
 ```
+
 The pca analysis for the independent variables  for 49 countries (data are available for most of the countries) was completed and the results was shown above. The first 4 principal components contributes 80 percent of the total variance. When looking at the first principal component, interannual variance and longtime precipitation are the top two variables who vary the most. In the second principal component, the seasonal variance and dependency ratio are the top two vairiables who vary the most. In the third principal component, the GDP is the predominent variable contributes to the total variance, while the total renewable water becomes the most important variable in the fourth principal component.
 
 
@@ -506,6 +512,5 @@ ac_matrix_1
 biplot(ac_matrix_pca)
 ```
 
-Compare to the independent matrix, the access matrix contains one less variable (6). The first three principal components counts for more than 93 percent of the total variance. The most siginificant component in pc1 is "total population have access to safe drinking water". In pc2, the energy per capita is the most significant component. In the pc3, deficit of food is the predominant variance. 
-We can discuss those findings in the next meeting.
+The updated PC analysis for access matrix also have the kink. In the first pc, total population have access to safe drinking water and improved sanitation, and energy per capita were almost equally distributed (range from 0.49 to 0.56, positive sign); the deficit of food contributes less with a negative sign (-0.36). In the second pc, the predominent variable is deficit of food. Overall, pc1 and pc2 account for 73 percent of the total variation, pc3 will add another 16.4 percent.
 
