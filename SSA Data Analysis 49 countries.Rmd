@@ -514,3 +514,80 @@ biplot(ac_matrix_pca)
 
 The updated PC analysis for access matrix also have the kink. In the first pc, total population have access to safe drinking water and improved sanitation, and energy per capita were almost equally distributed (range from 0.49 to 0.56, positive sign); the deficit of food contributes less with a negative sign (-0.36). In the second pc, the predominent variable is deficit of food. Overall, pc1 and pc2 account for 73 percent of the total variation, pc3 will add another 16.4 percent.
 
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#long term precipitation
+ind_matrix_af<-as.data.frame(ind_matrix_af)
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af),y=lt_ppt_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Long-term Precipitation (mm)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#total renewable water
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=tot_re_w_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Total Renewable Water Resources (10^9 cubic meter/year")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#Dependency Ratio
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=dep_ra_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Dependency Ratio (%)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#interannual variability
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=var_interan_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Interannual Variability")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#seasonal variability
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=var_seas_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Seasonal Variability")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#GDP
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=gdp_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "GDP (million current USD")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+#Construct bar plots for each variable in Physical matrix
+#HDI
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=hdi_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Human Development Index")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
