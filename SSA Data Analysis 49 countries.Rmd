@@ -474,11 +474,16 @@ tot_pop_impr_sani<-subset(data, Parameter.=="Population with access to improved 
 tot_pop_impr_sani_melt<-melt(tot_pop_impr_sani,id.vars = c("Parameter.","Unit.","Source.","Year."))
 tot_pop_impr_sani_melt$value<-as.numeric(tot_pop_impr_sani_melt$value)
 tot_pop_impr_sani_c<-tot_pop_impr_sani_melt$value
-ac_matrix<-cbind(tot_pop_ac_dw_c, ac_dw_ur_melt$value, ac_dw_ru_melt$value, tot_pop_impr_sani_c,ener_pp_c, defi_food_c)
+# Cut the redundancy of rural and
+# ac_matrix<-cbind(tot_pop_ac_dw_c, ac_dw_ur_melt$value, ac_dw_ru_melt$value, tot_pop_impr_sani_c,ener_pp_c, defi_food_c)
+ac_matrix<-cbind(tot_pop_ac_dw_c, tot_pop_impr_sani_c, ener_pp_c, defi_food_c)
+
 ac_matrix$value<-as.numeric(ac_matrix$value)
 ac_matrix$`Depth of the food deficit`<-as.numeric(ac_matrix$`Depth of the food deficit`)
 row.names(ac_matrix)<-Countries
-colnames(ac_matrix)<-c("tot_pop_ac_dw","ac_dw_ur", "ac_dw_ru", "tot_pop_impr_sani","ener_pp", "defi_food")
+#colnames(ac_matrix)<-c("tot_pop_ac_dw","ac_dw_ur", "ac_dw_ru", "tot_pop_impr_sani","ener_pp", "defi_food")
+colnames(ac_matrix)<-c("tot_pop_ac_dw", "tot_pop_impr_sani","ener_pp", "defi_food")
+
 ac_matrix_af<-head(ac_matrix,-5)
 ac_matrix_5ref<-head(ac_matrix,5)
 ```
@@ -497,6 +502,7 @@ ind_matrix_1<- ind_matrix_pca$rotation[,1]
 ind_matrix_1
 biplot(ind_matrix_pca)
 ```
+
 The pca analysis for the independent variables  for 49 countries (data are available for most of the countries) was completed and the results was shown above. The first 4 principal components contributes 80 percent of the total variance. When looking at the first principal component, interannual variance and longtime precipitation are the top two variables who vary the most. In the second principal component, the seasonal variance and dependency ratio are the top two vairiables who vary the most. In the third principal component, the GDP is the predominent variable contributes to the total variance, while the total renewable water becomes the most important variable in the fourth principal component.
 
 
@@ -515,7 +521,83 @@ ac_matrix_1
 biplot(ac_matrix_pca)
 ```
 
-Compare to the independent matrix, the access matrix contains one less variable (6). The first three principal components counts for more than 93 percent of the total variance. The most siginificant component in pc1 is "total population have access to safe drinking water". In pc2, the energy per capita is the most significant component. In the pc3, deficit of food is the predominant variance. 
+The updated PC analysis for access matrix also have the kink. In the first pc, total population have access to safe drinking water and improved sanitation, and energy per capita were almost equally distributed (range from 0.49 to 0.56, positive sign); the deficit of food contributes less with a negative sign (-0.36). In the second pc, the predominent variable is deficit of food. Overall, pc1 and pc2 account for 73 percent of the total variation, pc3 will add another 16.4 percent.
 
-We can discuss those findings in the next meeting.
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#long term precipitation
+ind_matrix_af<-as.data.frame(ind_matrix_af)
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af),y=lt_ppt_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Long-term Precipitation (mm)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
 
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#total renewable water
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=tot_re_w_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Total Renewable Water Resources (10^9 cubic meter/year")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#Dependency Ratio
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=dep_ra_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Dependency Ratio (%)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#interannual variability
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=var_interan_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Interannual Variability")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#seasonal variability
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=var_seas_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Seasonal Variability")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+```{r}
+# Construct bar plots for each variable in Physical matrix
+#GDP
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=gdp_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "GDP (million current USD")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
+
+
+```{r}
+#Construct bar plots for each variable in Physical matrix
+#HDI
+#avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=hdi_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
+  width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Human Development Index")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+#+ geom_hline(yintercept = avg_lt_ppt_c)
+warning= FALSE
+```
