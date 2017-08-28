@@ -13,10 +13,17 @@ knitr::opts_chunk$set(echo = FALSE)
 ##Work log
 July 3rd:
 I addressed the comments from the last meeting and start to write down some of the findings from the graphs we plotted.
+
 July 19th:
 I expanded my database and start to do the data analysis.
+
 August 18th:
 I filled the data in the access matrix and independent matrix and performed the pca analyses for the two matrix.
+
+August 27th:
+I added the bar plots for the each variable in the independent matrix.
+I also added the plot of HDI vs. Seasonal Variability.
+
 ```{r, include=FALSE}
 getwd()
 #setwd("/Users/dr.dk/Desktop/R-programming")
@@ -600,4 +607,20 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=hdi_c))+ geom_col(mappin
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Human Development Index")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
+```
+
+```{r}
+#plot HDI vs Seasonal Variation
+
+ggplot(ind_matrix_af, aes(x=hdi_c, y=var_seas_c, color=row.names(ind_matrix_af)))+
+  geom_point()+ geom_smooth(method="lm", color="black") +
+  labs(x="Human Development Index", y= "Seasonal Variability")+
+  theme(legend.position = "none")+ geom_text_repel(aes(hdi_c, var_seas_c, label = row.names(ind_matrix_af)))
+warning= FALSE
+```
+
+As we see from the plot, HDI and Seasonal Variability is highly correlated. The decreasing trend can be found, which seasonal variability reduces as HDI increases. This is quite interesting and not really easy to explain. 
+
+```{r}
+#Space reserved for the cluster analysis.
 ```
