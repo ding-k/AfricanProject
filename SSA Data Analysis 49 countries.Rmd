@@ -622,5 +622,33 @@ warning= FALSE
 As we see from the plot, HDI and Seasonal Variability is highly correlated. The decreasing trend can be found, which seasonal variability reduces as HDI increases. This is quite interesting and not really easy to explain. 
 
 ```{r}
-#Space reserved for the cluster analysis.
+#K means cluster analysis.
+#remove na values and standarize the data
+ind_matrix_af_ca<- na.omit(ind_matrix_af)
+ind_matrix_af_ca<- scale(ind_matrix_af_ca)
+
+# Determine number of clusters
+wss <- (nrow(ind_matrix_af_ca)-1)*sum(apply(ind_matrix_af_ca,2,var))
+for (i in 2:15) wss[i] <- sum(kmeans(ind_matrix_af_ca, 
+  	centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",
+  ylab="Within groups sum of squares")
+
+# K-Means Cluster Analysis
+fit <- kmeans(ind_matrix_af_ca, 4) # 5 cluster solution
+# get cluster means 
+aggregate(ind_matrix_af_ca,by=list(fit$cluster),FUN=mean)
+# append cluster assignment
+ca_data <- data.frame(ind_matrix_af_ca, fit$cluster)
+
+# Cluster Plot against 1st 2 principal components
+
+# vary parameters for most readable graph
+library(cluster) 
+clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE, 
+  	labels=2, lines=0)
+
+# Centroid Plot against 1st 2 discriminant functions
+library(fpc)
+plotcluster(ca_data, fit$cluster)
 ```
