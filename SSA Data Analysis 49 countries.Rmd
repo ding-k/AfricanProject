@@ -669,3 +669,67 @@ plotcluster(ca_data, fit$cluster)
 
 From the Cluster Analysis, in the plot of first two pc, we can see that the countries inside the same cluster are neighoring countries; some of the countries are in better economical standings. 
 
+```{r}
+#remove south africa and nigeria
+ind_wo_N_SA<-ind_matrix_af[-c(34,41),]
+#K means cluster analysis.for the phsicial data
+#remove na values and standarize the data
+
+#subset physical data
+ind_wo_N_SA_ca_ph<-ind_wo_N_SA_ca[,-c(6,7)]
+
+#subset social-economic data
+ind_wo_N_SA_ca_se<-ind_wo_N_SA_ca[,c(6,7)]
+
+# Determine number of clusters
+wss <- (nrow(ind_wo_N_SA_ca_ph)-1)*sum(apply(ind_wo_N_SA_ca_ph,2,var))
+for (i in 2:15) wss[i] <- sum(kmeans(ind_wo_N_SA_ca, 
+  	centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",
+  ylab="Within groups sum of squares")
+
+# K-Means Cluster Analysis
+fit <- kmeans(ind_wo_N_SA_ca_ph, 5) # 5 cluster solution
+# get cluster means 
+aggregate(ind_wo_N_SA_ca_ph,by=list(fit$cluster),FUN=mean)
+# append cluster assignment
+ca_data <- data.frame(ind_wo_N_SA_ca_ph, fit$cluster)
+
+# Cluster Plot against 1st 2 principal components
+
+# vary parameters for most readable graph
+library(cluster) 
+clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE, 
+  	labels=2, lines=0, cex.txt=0.5)
+
+# Centroid Plot against 1st 2 discriminant functions
+library(fpc)
+plotcluster(ca_data, fit$cluster)
+```
+
+```{r}
+# Determine number of clusters
+wss <- (nrow(ind_wo_N_SA_ca_se)-1)*sum(apply(ind_wo_N_SA_ca_se,2,var))
+for (i in 2:15) wss[i] <- sum(kmeans(ind_wo_N_SA_ca, 
+  	centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",
+  ylab="Within groups sum of squares")
+
+# K-Means Cluster Analysis
+fit <- kmeans(ind_wo_N_SA_ca_se, 5) # 5 cluster solution
+# get cluster means 
+aggregate(ind_wo_N_SA_ca_se,by=list(fit$cluster),FUN=mean)
+# append cluster assignment
+ca_data <- data.frame(ind_wo_N_SA_ca_se, fit$cluster)
+
+# Cluster Plot against 1st 2 principal components
+
+# vary parameters for most readable graph
+library(cluster) 
+clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE, 
+  	labels=2, lines=0, cex.txt=0.5)
+
+# Centroid Plot against 1st 2 discriminant functions
+library(fpc)
+plotcluster(ca_data, fit$cluster)
+```
