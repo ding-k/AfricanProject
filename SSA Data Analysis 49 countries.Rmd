@@ -540,6 +540,7 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af),y=lt_ppt_c))+ geom_col(mapp
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Long-term Precipitation (mm)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
+hist(ind_matrix_af$lt_ppt_c)
 ```
 
 ```{r}
@@ -551,6 +552,7 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=tot_re_w_c))+ geom_col(m
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Total Renewable Water Resources (10^9 cubic meter/year")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
+hist(hist(ind_matrix_af$tot_re_w_c))
 ```
 
 ```{r}
@@ -562,7 +564,10 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=dep_ra_c))+ geom_col(map
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Dependency Ratio (%)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
+hist(ind_matrix_af$dep_ra_c)
 ```
+
+Indicator expressing the percent of total renewable water resources originating outside the country. This indicator may theoretically vary between 0% and 100%. A country with a dependency ratio equal to 0% does not receive any water from neighbouring countries. A country with a dependency ratio equal to 100% receives all its renewable water from upstream countries, without producing any of its own. This indicator does not consider the possible allocation of water to downstream countries. 
 
 ```{r}
 # Construct bar plots for each variable in Physical matrix
@@ -573,7 +578,10 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=var_interan_c))+ geom_co
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Interannual Variability")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
+hist(ind_matrix_af$var_interan_c)
 ```
+
+This interannual variation was measured in the standard deviation and calculated using: "Standard deviation of annual total blue water divided by the mean of total blue water (1950–2008)".
 
 ```{r}
 # Construct bar plots for each variable in Physical matrix
@@ -584,7 +592,10 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=var_seas_c))+ geom_col(m
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Seasonal Variability")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
+hist(ind_matrix_af$var_seas_c)
 ```
+
+This is the variability measured in standard deviation and calculated using: "standard deviation of monthly total blue water divided by the mean of monthly total blue water (1950–2008)."
 
 ```{r}
 # Construct bar plots for each variable in Physical matrix
@@ -595,6 +606,7 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=gdp_c))+ geom_col(mappin
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "GDP (million current USD")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
+hist(ind_matrix_af$gdp_c)
 ```
 
 
@@ -607,6 +619,7 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=hdi_c))+ geom_col(mappin
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Human Development Index")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
+hist(ind_matrix_af$hdi_c)
 ```
 
 ```{r}
@@ -617,6 +630,7 @@ ggplot(ind_matrix_af, aes(x=hdi_c, y=var_seas_c, color=row.names(ind_matrix_af))
   labs(x="Human Development Index", y= "Seasonal Variability")+
   theme(legend.position = "none")+ geom_text_repel(aes(hdi_c, var_seas_c, label = row.names(ind_matrix_af)))
 warning= FALSE
+hist(hdi_c)
 ```
 
 As we see from the plot, HDI and Seasonal Variability is highly correlated. The decreasing trend can be found, which seasonal variability reduces as HDI increases. This is quite interesting and not really easy to explain. 
@@ -635,7 +649,7 @@ plot(1:15, wss, type="b", xlab="Number of Clusters",
   ylab="Within groups sum of squares")
 
 # K-Means Cluster Analysis
-fit <- kmeans(ind_matrix_af_ca, 4) # 5 cluster solution
+fit <- kmeans(ind_matrix_af_ca, 6) # 6 cluster solution
 # get cluster means 
 aggregate(ind_matrix_af_ca,by=list(fit$cluster),FUN=mean)
 # append cluster assignment
@@ -646,9 +660,12 @@ ca_data <- data.frame(ind_matrix_af_ca, fit$cluster)
 # vary parameters for most readable graph
 library(cluster) 
 clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE, 
-  	labels=2, lines=0)
+  	labels=2, lines=0, cex.txt=0.5)
 
 # Centroid Plot against 1st 2 discriminant functions
 library(fpc)
 plotcluster(ca_data, fit$cluster)
 ```
+
+From the Cluster Analysis, in the plot of first two pc, we can see that the countries inside the same cluster are neighoring countries; some of the countries are in better economical standings. 
+
