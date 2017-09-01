@@ -32,6 +32,8 @@ library(reshape2)
 library(Hmisc)
 library(ggrepel)
 require(CCA)
+library(cluster)
+library(fpc)
 options(warn=-1)
 ```
 
@@ -552,7 +554,7 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=tot_re_w_c))+ geom_col(m
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Total Renewable Water Resources (10^9 cubic meter/year")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
-hist(hist(ind_matrix_af$tot_re_w_c))
+hist(ind_matrix_af$tot_re_w_c)
 ```
 
 ```{r}
@@ -635,11 +637,15 @@ hist(hdi_c)
 
 As we see from the plot, HDI and Seasonal Variability is highly correlated. The decreasing trend can be found, which seasonal variability reduces as HDI increases. This is quite interesting and not really easy to explain. 
 
+# Cluster Analysis for entire Independent Matrix
+
 ```{r}
 #K means cluster analysis.
 #remove na values and standarize the data
 ind_matrix_af_ca<- na.omit(ind_matrix_af)
 ind_matrix_af_ca<- scale(ind_matrix_af_ca)
+#find out the number of rows where nigeria and south africa at.
+#ind_matrix_af_ca<-cbind(ind_matrix_af_ca, as.numeric(1:41))
 
 # Determine number of clusters
 wss <- (nrow(ind_matrix_af_ca)-1)*sum(apply(ind_matrix_af_ca,2,var))
@@ -658,32 +664,31 @@ ca_data <- data.frame(ind_matrix_af_ca, fit$cluster)
 # Cluster Plot against 1st 2 principal components
 
 # vary parameters for most readable graph
-library(cluster) 
+
 clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE, 
   	labels=2, lines=0, cex.txt=0.5)
 
 # Centroid Plot against 1st 2 discriminant functions
-library(fpc)
+
 plotcluster(ca_data, fit$cluster)
 ```
 
 From the Cluster Analysis, in the plot of first two pc, we can see that the countries inside the same cluster are neighoring countries; some of the countries are in better economical standings. 
 
+# Cluster Analysis for physical resources Parameters in the Independent Matrix. (Nigeria and South Africa were removed)
+
 ```{r}
 #remove south africa and nigeria
-ind_wo_N_SA<-ind_matrix_af[-c(34,41),]
+ind_wo_N_SA<-ind_matrix_af_ca[-c(29,33),]
 #K means cluster analysis.for the phsicial data
 #remove na values and standarize the data
 
 #subset physical data
-ind_wo_N_SA_ca_ph<-ind_wo_N_SA_ca[,-c(6,7)]
-
-#subset social-economic data
-ind_wo_N_SA_ca_se<-ind_wo_N_SA_ca[,c(6,7)]
+ind_wo_N_SA_ca_ph<-ind_wo_N_SA[,-c(6,7)]
 
 # Determine number of clusters
 wss <- (nrow(ind_wo_N_SA_ca_ph)-1)*sum(apply(ind_wo_N_SA_ca_ph,2,var))
-for (i in 2:15) wss[i] <- sum(kmeans(ind_wo_N_SA_ca, 
+for (i in 2:15) wss[i] <- sum(kmeans(ind_wo_N_SA_ca_ph, 
   	centers=i)$withinss)
 plot(1:15, wss, type="b", xlab="Number of Clusters",
   ylab="Within groups sum of squares")
@@ -698,38 +703,43 @@ ca_data <- data.frame(ind_wo_N_SA_ca_ph, fit$cluster)
 # Cluster Plot against 1st 2 principal components
 
 # vary parameters for most readable graph
-library(cluster) 
+ 
 clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE, 
   	labels=2, lines=0, cex.txt=0.5)
 
 # Centroid Plot against 1st 2 discriminant functions
-library(fpc)
+
 plotcluster(ca_data, fit$cluster)
 ```
 
+# Cluster Analysis for Social and Economical Parameters in the Independent Matrix.
+
 ```{r}
+#subset social-economic data
+ind_wo_N_SA_ca_se<-ind_wo_N_SA[,c(6,7)]
+#Need to address the discrepency issues btw rmd and knit files
 # Determine number of clusters
 wss <- (nrow(ind_wo_N_SA_ca_se)-1)*sum(apply(ind_wo_N_SA_ca_se,2,var))
-for (i in 2:15) wss[i] <- sum(kmeans(ind_wo_N_SA_ca, 
+for (i in 2:15) wss[i] <- sum(kmeans(ind_wo_N_SA_ca_se, 
   	centers=i)$withinss)
 plot(1:15, wss, type="b", xlab="Number of Clusters",
   ylab="Within groups sum of squares")
 
 # K-Means Cluster Analysis
-fit <- kmeans(ind_wo_N_SA_ca_se, 5) # 5 cluster solution
+fit_se <- kmeans(ind_wo_N_SA_ca_se, 5) # 5 cluster solution
 # get cluster means 
-aggregate(ind_wo_N_SA_ca_se,by=list(fit$cluster),FUN=mean)
+aggregate(ind_wo_N_SA_ca_se,by=list(fit_se$cluster),FUN=mean)
 # append cluster assignment
-ca_data <- data.frame(ind_wo_N_SA_ca_se, fit$cluster)
+ca_data_se<- data.frame(ind_wo_N_SA_ca_se, fit_se$cluster)
 
 # Cluster Plot against 1st 2 principal components
 
 # vary parameters for most readable graph
-library(cluster) 
-clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE, 
+
+clusplot(ca_data_se, fit_se$cluster, color=TRUE, shade=TRUE, 
   	labels=2, lines=0, cex.txt=0.5)
 
 # Centroid Plot against 1st 2 discriminant functions
-library(fpc)
-plotcluster(ca_data, fit$cluster)
+
+plotcluster(ca_data_se, fit_se$cluster)
 ```
