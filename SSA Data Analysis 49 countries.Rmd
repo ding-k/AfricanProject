@@ -421,13 +421,17 @@ equality_af<-head(equality,-5)
 
 
 ```{r}
-#data[grep("population",data$Parameter.,ignore.case=TRUE),]
+#subset individual index and social index
+data[grep("life",data$Parameter.,ignore.case=TRUE),]
 lt_ppt<-subset(data,Parameter.=="Long-term annual precip depth")
 tot_re_w<-subset(data,Parameter.=="Total renewable water sources")
 dep_ra<-subset(data,Parameter.=="Dependency ratio")
 var_interan<-subset(data,Parameter.=="Interannual variability")
 var_seas<-subset(data,Parameter.=="Seasonal variability")
 gdp<-subset(data,Parameter.=="Gross domestic product (GDP)")
+gdp_pp<-subset(data,Parameter.=="GDP per capita")
+edu_ind<-subset(data,Parameter.=="Education Index")
+life_exp<-subset(data,Parameter.=="Life Expectancy at both sexs")
 gdp<-gdp[1,]
 hdi<-subset(data,Parameter.=="HDI")
 tot_pop<-subset(data,Parameter.=="Population")
@@ -451,6 +455,15 @@ var_seas_melt$value<-as.numeric(var_seas_melt$value)
 gdp_melt<-melt(gdp,id.vars = c("Parameter.","Unit.","Source.","Year."))
 gdp_melt$value<-as.numeric(gdp_melt$value)
 
+gdp_pp_melt<-melt(gdp_pp,id.vars = c("Parameter.","Unit.","Source.","Year."))
+gdp_pp_melt$value<-as.numeric(gdp_pp_melt$value)
+
+edu_ind_melt<-melt(edu_ind,id.vars = c("Parameter.","Unit.","Source.","Year."))
+edu_ind_melt$value<-as.numeric(edu_ind_melt$value)
+
+life_exp_melt<-melt(life_exp,id.vars = c("Parameter.","Unit.","Source.","Year."))
+life_exp_melt$value<-as.numeric(life_exp_melt$value)
+
 hdi_melt<-melt(hdi,id.vars = c("Parameter.","Unit.","Source.","Year."))
 hdi_melt$value<-as.numeric(hdi_melt$value)
 
@@ -467,10 +480,17 @@ var_interan_c<-var_interan_melt$value
 var_seas_c<-var_seas_melt$value
 gdp_c<-gdp_melt$value
 hdi_c<-hdi_melt$value
+gdp_pp_c<-gdp_pp_melt$value
+edu_ind_c<-edu_ind_melt$value
+life_exp_c<-life_exp_melt$value
 ind_matrix<-cbind(lt_ppt_c, tot_re_w_c, dep_ra_c, var_interan_c, var_seas_c, gdp_c, hdi_c)
+social_matrix<-cbind(gdp_pp_c, edu_ind_c, life_exp_c)
 row.names(ind_matrix)<-Countries
+row.names(social_matrix)<-Countries
 ind_matrix_af<-head(ind_matrix,-5)
 ind_matrix_5ref<-head(ind_matrix,5)
+social_matrix_af<-head(social_matrix,-5)
+social_matrix_5ref<-head(social_matrix,5)
 
 #subset the access data
 #data[grep("energy supply",data$Parameter.,ignore.case=TRUE),]
@@ -483,7 +503,7 @@ tot_pop_impr_sani<-subset(data, Parameter.=="Population with access to improved 
 tot_pop_impr_sani_melt<-melt(tot_pop_impr_sani,id.vars = c("Parameter.","Unit.","Source.","Year."))
 tot_pop_impr_sani_melt$value<-as.numeric(tot_pop_impr_sani_melt$value)
 tot_pop_impr_sani_c<-tot_pop_impr_sani_melt$value
-# Cut the redundancy of rural and
+# Cut the redundancy of rural and urban ac_dw
 # ac_matrix<-cbind(tot_pop_ac_dw_c, ac_dw_ur_melt$value, ac_dw_ru_melt$value, tot_pop_impr_sani_c,ener_pp_c, defi_food_c)
 ac_matrix<-cbind(tot_pop_ac_dw_c, tot_pop_impr_sani_c, ener_pp_c, defi_food_c)
 
@@ -511,6 +531,7 @@ ind_matrix_1<- ind_matrix_pca$rotation[,1]
 ind_matrix_1
 biplot(ind_matrix_pca)
 ```
+
 
 The pca analysis for the independent variables  for 49 countries (data are available for most of the countries) was completed and the results was shown above. The first 4 principal components contributes 80 percent of the total variance. When looking at the first principal component, interannual variance and longtime precipitation are the top two variables who vary the most. In the second principal component, the seasonal variance and dependency ratio are the top two vairiables who vary the most. In the third principal component, the GDP is the predominent variable contributes to the total variance, while the total renewable water becomes the most important variable in the fourth principal component.
 
@@ -561,6 +582,7 @@ hist(ind_matrix_af$tot_re_w_c)
 # Construct bar plots for each variable in Physical matrix
 #Dependency Ratio
 #avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ind_matrix_af$tot_re_w_c<-log10(ind_matrix_af$tot_re_w_c)
 ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=dep_ra_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
   width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Dependency Ratio (%)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
@@ -603,9 +625,10 @@ This is the variability measured in standard deviation and calculated using: "st
 # Construct bar plots for each variable in Physical matrix
 #GDP
 #avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ind_matrix_af$gdp_c<-log10(ind_matrix_af$gdp_c)
 ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=gdp_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
   width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
-              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "GDP (million current USD")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
+              axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "log10(GDP) (log10(million current USD)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
 hist(ind_matrix_af$gdp_c)
@@ -632,7 +655,6 @@ ggplot(ind_matrix_af, aes(x=hdi_c, y=var_seas_c, color=row.names(ind_matrix_af))
   labs(x="Human Development Index", y= "Seasonal Variability")+
   theme(legend.position = "none")+ geom_text_repel(aes(hdi_c, var_seas_c, label = row.names(ind_matrix_af)))
 warning= FALSE
-hist(hdi_c)
 ```
 
 As we see from the plot, HDI and Seasonal Variability is highly correlated. The decreasing trend can be found, which seasonal variability reduces as HDI increases. This is quite interesting and not really easy to explain. 
@@ -742,4 +764,52 @@ clusplot(ca_data_se, fit_se$cluster, color=TRUE, shade=TRUE,
 # Centroid Plot against 1st 2 discriminant functions
 
 plotcluster(ca_data_se, fit_se$cluster)
+```
+
+```{r}
+#principle component analysis in independent variables
+social_matrix_pca<- social_matrix_af[complete.cases(social_matrix_af),]
+social_matrix_pca<- prcomp(social_matrix_pca,center=TRUE, scale = TRUE)#matrix was normalized (scale=true) before perform pca analysis
+
+print("PCA of social Variables")
+print(social_matrix_pca)
+summary(social_matrix_pca)
+screeplot(social_matrix_pca, type="lines")
+social_matrix_1<- social_matrix_pca$rotation[,1]
+social_matrix_1
+biplot(social_matrix_pca)
+```
+
+```{r}
+#K means cluster analysis.
+#remove na values and standarize the data
+social_matrix_af_ca<- na.omit(social_matrix_af)
+social_matrix_af_ca<- scale(social_matrix_af_ca)
+#find out the number of rows where nigeria and south africa at.
+#ind_matrix_af_ca<-cbind(ind_matrix_af_ca, as.numeric(1:41))
+
+# Determine number of clusters
+wss <- (nrow(social_matrix_af_ca)-1)*sum(apply(social_matrix_af_ca,2,var))
+for (i in 2:15) wss[i] <- sum(kmeans(social_matrix_af_ca, 
+  	centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",
+  ylab="Within groups sum of squares")
+
+# K-Means Cluster Analysis
+fit <- kmeans(social_matrix_af_ca, 6) # 6 cluster solution
+# get cluster means 
+aggregate(social_matrix_af_ca,by=list(fit$cluster),FUN=mean)
+# append cluster assignment
+ca_data <- data.frame(social_matrix_af_ca, fit$cluster)
+
+# Cluster Plot against 1st 2 principal components
+
+# vary parameters for most readable graph
+
+clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE, 
+  	labels=2, lines=0, cex.txt=0.5)
+
+# Centroid Plot against 1st 2 discriminant functions
+
+plotcluster(ca_data, fit$cluster)
 ```
