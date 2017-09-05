@@ -563,19 +563,20 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af),y=lt_ppt_c))+ geom_col(mapp
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Long-term Precipitation (mm)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
-hist(ind_matrix_af$lt_ppt_c)
+hist(ind_matrix_af$lt_ppt_c, breaks = 20, xlab = "Long-Term precipitation (mm/year)", main = "Histogram: Long-Term Precipitation of SSA Countries")
 ```
 
 ```{r}
 # Construct bar plots for each variable in Physical matrix
 #total renewable water
 #avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+ind_matrix_af$tot_re_w_c<-log10(ind_matrix_af$tot_re_w_c)
 ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=tot_re_w_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
   width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Total Renewable Water Resources (10^9 cubic meter/year")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
-hist(ind_matrix_af$tot_re_w_c)
+hist(ind_matrix_af$tot_re_w_c, breaks = 20, xlab="log10(total renewable water resources), log10(10^9 cubic meter per year)", main = "Histogram: Log10 of Total Renewable Water Resources of SSA Countries")
 ```
 
 ```{r}
@@ -588,7 +589,7 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=dep_ra_c))+ geom_col(map
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Dependency Ratio (%)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
-hist(ind_matrix_af$dep_ra_c)
+hist(ind_matrix_af$dep_ra_c, breaks= 20, xlab = "Dependancy Ratio (%)", main = "Histogram: Dependancy ratio of SSA Countries")
 ```
 
 Indicator expressing the percent of total renewable water resources originating outside the country. This indicator may theoretically vary between 0% and 100%. A country with a dependency ratio equal to 0% does not receive any water from neighbouring countries. A country with a dependency ratio equal to 100% receives all its renewable water from upstream countries, without producing any of its own. This indicator does not consider the possible allocation of water to downstream countries. 
@@ -602,7 +603,7 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=var_interan_c))+ geom_co
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Interannual Variability")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
-hist(ind_matrix_af$var_interan_c)
+hist(ind_matrix_af$var_interan_c, breaks = 20, xlab = "Interannual Variability (measured in standard deviations)", main = "Histogram: Interannual Viariability of SSA Countries")
 ```
 
 This interannual variation was measured in the standard deviation and calculated using: "Standard deviation of annual total blue water divided by the mean of total blue water (1950–2008)".
@@ -616,7 +617,7 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=var_seas_c))+ geom_col(m
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Seasonal Variability")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
-hist(ind_matrix_af$var_seas_c)
+hist(ind_matrix_af$var_seas_c, breaks = 20, xlab = "Seasonal Variability (measured in standard deviations)", main = "Histogram: Seasonal Viariability of SSA Countries")
 ```
 
 This is the variability measured in standard deviation and calculated using: "standard deviation of monthly total blue water divided by the mean of monthly total blue water (1950–2008)."
@@ -625,13 +626,14 @@ This is the variability measured in standard deviation and calculated using: "st
 # Construct bar plots for each variable in Physical matrix
 #GDP
 #avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
+log
 ind_matrix_af$gdp_c<-log10(ind_matrix_af$gdp_c)
 ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=gdp_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
   width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "log10(GDP) (log10(million current USD)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
-hist(ind_matrix_af$gdp_c)
+hist(ind_matrix_af$gdp_c, breaks = 20, xlab = "Log10(Gross Domestic Products) Log10(current million USD)", main = "Histogram: Log10 of GDP values of SSA Countries")
 ```
 
 
@@ -701,7 +703,15 @@ From the Cluster Analysis, in the plot of first two pc, we can see that the coun
 
 ```{r}
 #remove south africa and nigeria
-ind_wo_N_SA<-ind_matrix_af_ca[-c(29,33),]
+num_countries<-cbind(row.names(ind_matrix_af_ca), as.numeric(1:nrow(ind_matrix_af_ca)))
+colnames(num_countries)<-c("countries","order")
+num_countries<-as.data.frame(num_countries)
+num_countries$order<-as.numeric(1:nrow(num_countries))
+nigeria<-subset(num_countries, countries =="Nigeria")
+south_africa<-subset(num_countries, countries =="South.Africa")
+nga<-nigeria$order
+saf<-south_africa$order
+ind_wo_N_SA<-ind_matrix_af_ca[-c(nga,saf),]
 #K means cluster analysis.for the phsicial data
 #remove na values and standarize the data
 
@@ -748,7 +758,7 @@ plot(1:15, wss, type="b", xlab="Number of Clusters",
   ylab="Within groups sum of squares")
 
 # K-Means Cluster Analysis
-fit_se <- kmeans(ind_wo_N_SA_ca_se, 5) # 5 cluster solution
+fit_se <- kmeans(ind_wo_N_SA_ca_se, 6) # 6 cluster solution
 # get cluster means 
 aggregate(ind_wo_N_SA_ca_se,by=list(fit_se$cluster),FUN=mean)
 # append cluster assignment
@@ -767,6 +777,16 @@ plotcluster(ca_data_se, fit_se$cluster)
 ```
 
 ```{r}
+#remove south africa and nigeria
+num_countries_sm<-cbind(row.names(social_matrix_af), as.numeric(1:nrow(social_matrix_af)))
+colnames(num_countries_sm)<-c("countries","order")
+num_countries_sm<-as.data.frame(num_countries_sm)
+num_countries_sm$order<-as.numeric(1:nrow(num_countries_sm))
+nigeria_sm<-subset(num_countries_sm, countries =="Nigeria")
+south_africa_sm<-subset(num_countries_sm, countries =="South.Africa")
+nga_sm<-nigeria_sm$order
+saf_sm<-south_africa_sm$order
+social_matrix_af<-social_matrix_af[-c(nga_sm,saf_sm),]
 #principle component analysis in independent variables
 social_matrix_pca<- social_matrix_af[complete.cases(social_matrix_af),]
 social_matrix_pca<- prcomp(social_matrix_pca,center=TRUE, scale = TRUE)#matrix was normalized (scale=true) before perform pca analysis
