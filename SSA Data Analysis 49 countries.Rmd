@@ -422,7 +422,7 @@ equality_af<-head(equality,-5)
 
 ```{r}
 #subset individual index and social index
-data[grep("life",data$Parameter.,ignore.case=TRUE),]
+#data[grep("life",data$Parameter.,ignore.case=TRUE),]
 lt_ppt<-subset(data,Parameter.=="Long-term annual precip depth")
 tot_re_w<-subset(data,Parameter.=="Total renewable water sources")
 dep_ra<-subset(data,Parameter.=="Dependency ratio")
@@ -521,7 +521,7 @@ ac_matrix_5ref<-head(ac_matrix,5)
 ```{r}
 #principle component analysis in independent variables
 ind_matrix_pca<- ind_matrix_af[complete.cases(ind_matrix_af),]
-ind_matrix_pca<- prcomp(ind_matrix_pca,center=TRUE, scale = TRUE)#matrix was normalized (scale=true) before perform pca analysis
+ind_matrix_pca<- prcomp(ind_matrix_pca[1:5,],center=TRUE, scale = TRUE)#matrix was normalized (scale=true) before perform pca analysis
 
 print("PCA of Independent Variables")
 print(ind_matrix_pca)
@@ -626,7 +626,6 @@ This is the variability measured in standard deviation and calculated using: "st
 # Construct bar plots for each variable in Physical matrix
 #GDP
 #avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
-log
 ind_matrix_af$gdp_c<-log10(ind_matrix_af$gdp_c)
 ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=gdp_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
   width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
@@ -743,6 +742,8 @@ clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE,
 
 plotcluster(ca_data, fit$cluster)
 ```
+
+The log10 values of total renewable water resources was used in cluster analysis. The data frame was scaled for the cluster analysis.  
 
 # Cluster Analysis for Social and Economical Parameters in the Independent Matrix.
 
