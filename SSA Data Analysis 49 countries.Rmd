@@ -34,6 +34,7 @@ library(ggrepel)
 require(CCA)
 library(cluster)
 library(fpc)
+library(YaleToolkit)
 options(warn=-1)
 ```
 
@@ -515,6 +516,21 @@ colnames(ac_matrix)<-c("tot_pop_ac_dw", "tot_pop_impr_sani","ener_pp", "defi_foo
 
 ac_matrix_af<-head(ac_matrix,-5)
 ac_matrix_5ref<-head(ac_matrix,5)
+
+av_av<-cbind(ind_matrix_af[,-c(7)],social_matrix_af, ac_matrix_af,health)
+```
+```{r}
+#normalize data
+area<-subset(data,Parameter.=="Area of the country")    
+area_melt<-melt(area,id.vars = c("Parameter.","Unit.","Source.","Year."))
+area_melt$value<-as.numeric(area_melt$value)
+area_c<-as.numeric(area_melt$value)
+area_af<-head(area_c,-5)
+ind_matrix_af<-as.data.frame(ind_matrix_af)
+ind_matrix_af$tot_re_w_c<-ind_matrix_af$tot_re_w_c/area_af*10^6
+ind_matrix_af$tot_re_w_c<-as.numeric(ind_matrix_af$tot_re_w_c)
+
+
 ```
 
 ##PCA Analysis of Independent Variables
@@ -556,7 +572,6 @@ The updated PC analysis for access matrix also have the kink. In the first pc, t
 ```{r}
 # Construct bar plots for each variable in Physical matrix
 #long term precipitation
-ind_matrix_af<-as.data.frame(ind_matrix_af)
 #avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
 ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af),y=lt_ppt_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
   width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
@@ -576,14 +591,14 @@ ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=tot_re_w_c))+ geom_col(m
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Total Renewable Water Resources (10^9 cubic meter/year")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
 #+ geom_hline(yintercept = avg_lt_ppt_c)
 warning= FALSE
-hist(ind_matrix_af$tot_re_w_c, breaks = 20, xlab="log10(total renewable water resources), log10(10^9 cubic meter per year)", main = "Histogram: Log10 of Total Renewable Water Resources of SSA Countries")
+hist(ind_matrix_af$tot_re_w_c, breaks = 20, xlab="log10(total renewable water resources), log10(cubic meter per year per hectare area of the country)", main = "Histogram: Log10 of Total Renewable Water Resources of SSA Countries")
 ```
 
 ```{r}
 # Construct bar plots for each variable in Physical matrix
 #Dependency Ratio
 #avg_lt_ppt_c<-mean(ind_matrix_af$lt_ppt_c)
-ind_matrix_af$tot_re_w_c<-log10(ind_matrix_af$tot_re_w_c)
+
 ggplot(ind_matrix_af, aes(x=row.names(ind_matrix_af), y=dep_ra_c))+ geom_col(mapping = NULL, data = NULL, position = "stack",
   width = NULL, na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)+ theme(legend.position="top",
               axis.text=element_text(angle=90, size = 6))+ labs(x="Countries", y= "Dependency Ratio (%)")+ coord_cartesian(xlim= NULL,ylim = NULL, expand= TRUE)+geom_text(aes(label=row.names(ind_matrix_af)),size=2,hjust=0.5,vjust=0)
@@ -648,17 +663,7 @@ warning= FALSE
 hist(ind_matrix_af$hdi_c)
 ```
 
-```{r}
-#plot HDI vs Seasonal Variation
 
-ggplot(ind_matrix_af, aes(x=hdi_c, y=var_seas_c, color=row.names(ind_matrix_af)))+
-  geom_point()+ geom_smooth(method="lm", color="black") +
-  labs(x="Human Development Index", y= "Seasonal Variability")+
-  theme(legend.position = "none")+ geom_text_repel(aes(hdi_c, var_seas_c, label = row.names(ind_matrix_af)))
-warning= FALSE
-```
-
-As we see from the plot, HDI and Seasonal Variability is highly correlated. The decreasing trend can be found, which seasonal variability reduces as HDI increases. This is quite interesting and not really easy to explain. 
 
 # Cluster Analysis for entire Independent Matrix
 
@@ -834,3 +839,44 @@ clusplot(ca_data, fit$cluster, color=TRUE, shade=TRUE,
 
 plotcluster(ca_data, fit$cluster)
 ```
+
+
+```{r}
+#plot HDI vs Seasonal Variation
+#select and subset data of two matrices and diff lengths
+judge<-ifelse(row.names(ind_matrix_af) %in% row.names(ca_data_se),row(ind_matrix_af),0)
+judge<-subset(judge, judge>0)
+ind_matrix_af_pl<-ind_matrix_af[judge,]
+library(RColorBrewer)
+ggplot(ind_matrix_af_pl, aes(x=hdi_c, y=var_seas_c, color=as.character(ca_data_se$fit_se.cluster)))+
+  geom_point()+ geom_smooth(method="lm", color="black") +
+  labs(x="Human Development Index", y= "Seasonal Variability")+
+  theme(legend.position = "none")+ geom_text_repel(aes(hdi_c, var_seas_c, label = row.names(ind_matrix_af_pl)))
+warning= FALSE
+?ggplot
+```
+
+As we see from the plot, HDI and Seasonal Variability is highly correlated. The decreasing trend can be found, which seasonal variability reduces as HDI increases. This is quite interesting and not really easy to explain. 
+
+```{r}
+#pairs(~lt_ppt_c+tot_re_w_c+dep_ra_c+var_interan_c+var_seas_c+gdp_c+gdp_pp_c+edu_ind_c+life_exp_c, data= av_av)
+# panel.smooth function is built in.
+# panel.cor puts correlation in upper panels, size proportional to correlation
+panel.cor <- function(x, y, digits=2, prefix="", cex.cor, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- abs(cor(x, y))
+    txt <- format(c(r, 0.123456789), digits=digits)[1]
+    txt <- paste(prefix, txt, sep="")
+    if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+    text(0.5, 0.5, txt, cex = cex.cor * r)
+}
+pairs(~lt_ppt_c+tot_re_w_c+dep_ra_c+var_interan_c+var_seas_c+gdp_c+gdp_pp_c+edu_ind_c+life_exp_c+tot_pop_ac_dw+tot_pop_impr_sani+ener_pp+defi_food+diarrhea+death_airpollu+U5underw, data= av_av,
+      lower.panel=panel.smooth, upper.panel=panel.cor, 
+      pch=20, main="Iris Scatterplot Matrix")
+
+```
+
+
+
